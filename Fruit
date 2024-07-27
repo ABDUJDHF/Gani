@@ -1,0 +1,35 @@
+local myBackpack = game.Players.LocalPlayer.Backpack
+local players = game:GetService("Players")
+
+-- دالة لتحويل الباك باك لقاموس (Hashtable)
+local function convertBackpackToTable(backpack)
+    local itemsTable = {}
+    for i, item in ipairs(backpack:GetChildren()) do
+        itemsTable[item.Name] = true
+    end
+    return itemsTable
+end
+
+-- هنا تحديث الحقيبة الخاصة بك
+local function updateMyBackpack(playerBackpack)
+    local playerItems = convertBackpackToTable(playerBackpack)
+    for itemName, _ in pairs(playerItems) do
+        -- إضافة العنصر لباك باكك إذا لم يكن موجود مسبقا
+        if not myBackpack:FindFirstChild(itemName) then
+            -- إيجاد العنصر في الباك باك الخاصة باللاعب
+            local itemToClone = playerBackpack:FindFirstChild(itemName)
+            if itemToClone then
+                local clonedItem = itemToClone:Clone()
+                clonedItem.Parent = myBackpack
+                print("Adding " .. itemName .. " to my backpack.")
+            end
+        end
+    end
+end
+
+-- البحث في باك باك كل اللاعبين بإستثناء باك باكك أنت
+for i, player in ipairs(players:GetPlayers()) do
+    if player ~= game.Players.LocalPlayer then
+        updateMyBackpack(player.Backpack)
+    end
+end
